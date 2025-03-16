@@ -12,6 +12,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,7 +107,7 @@ public class ClientUI extends MouseAdapter {
             String line;
             while ((line = reader.readLine()) != null) {
                 String name = line.trim().replace(".wav", "");
-                AudioInputStream imageStream = AudioSystem.getAudioInputStream(ClassLoader.getSystemResourceAsStream("resources/" + line.trim()));
+                AudioInputStream imageStream = AudioSystem.getAudioInputStream(new BufferedInputStream(ClassLoader.getSystemResourceAsStream("resources/" + line.trim())));
                 if (imageStream != null) {
                     Clip clip = AudioSystem.getClip();
                     clip.open(imageStream);
