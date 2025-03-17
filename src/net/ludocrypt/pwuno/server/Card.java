@@ -239,6 +239,16 @@ public class Card implements Comparable<Card> {
         public static CardSuit random() {
             return random(new Random());
         }
+
+        public static CardSuit byColor(String color) {
+            return switch (color) {
+                case "Blue" -> CardSuit.SPADES;
+                case "Yellow" -> CardSuit.HEARTS;
+                case "Red" -> CardSuit.CLUBS;
+                case "Green" -> CardSuit.DIAMONDS;
+                default -> throw new IllegalArgumentException("Unexpected value: " + color);
+            };
+        }
     }
 
     public enum CardType {

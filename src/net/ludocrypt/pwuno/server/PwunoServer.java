@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
+import javax.swing.JComboBox;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -26,7 +28,10 @@ public class PwunoServer {
 
     public List<PlayerConnection> players;
 
-    public PwunoServer(int port) throws IOException {
+    JComboBox<PlayerConnection> playersBox;
+
+    public PwunoServer(int port, JComboBox<PlayerConnection> playersBox) throws IOException {
+        this.playersBox = playersBox;
         server = new Server() {
             @Override
             protected Connection newConnection() {
@@ -42,6 +47,7 @@ public class PwunoServer {
         server.addListener(new Listener() {
             @Override
             public void received(Connection c, Object request) {
+
                 if (c instanceof PlayerConnection player) {
 
                     if (request instanceof LoginRequest login) {
@@ -183,6 +189,7 @@ public class PwunoServer {
                 players.add(player);
 
                 Collections.sort(players, Comparator.comparing(Connection::getID));
+                updateDeck();
 
                 PlayersRequest.shipToClients(players);
             }
@@ -192,6 +199,7 @@ public class PwunoServer {
                 players.remove(c);
 
                 Collections.sort(players, Comparator.comparing(Connection::getID));
+                updateDeck();
 
                 PlayersRequest.shipToClients(players);
             }
@@ -202,8 +210,15 @@ public class PwunoServer {
     }
 
     public void nextTurn(int c) {
-        commonData.playerTurnIndex = modfix(commonData.playerTurnIndex + (commonData.reversed ? c : -c), players.size());
+        commonData.playerTurnIndex = modfix(commonData.playerTurnIndex - (commonData.reversed ? c : -c), players.size());
         commonData.playerTurnId = players.get(commonData.playerTurnIndex).getID();
+    }
+
+    public void updateDeck() {
+        playersBox.removeAllItems();
+        for (PlayerConnection player : players) {
+            playersBox.addItem(player);
+        }
     }
 
     private static int modfix(int a, int b) {
@@ -220,6 +235,11 @@ public class PwunoServer {
 
         public String playerName;
         public List<Card> hand = new ArrayList<>();
+
+        @Override
+        public String toString() {
+            return this.playerName + "  (" + this.getID() + ")";
+        }
 
     }
 

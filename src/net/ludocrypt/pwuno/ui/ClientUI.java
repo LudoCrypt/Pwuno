@@ -239,14 +239,24 @@ public class ClientUI extends MouseAdapter {
             double playerCardWidth = 640.0 / (double) players;
 
             int i = -1;
+            int i2 = -1;
             for (PrivatePlayer player : connectedPlayers) {
                 if (player.playerName != null) {
+                    g.setColor(Color.BLACK);
+
                     if (player.id != client.getClient().getID()) {
                         i++;
                         drawUserInfo(g, player, playerCardWidth, i * playerCardWidth, 0);
                     } else {
                         drawUserInfo(g, player, 213, 0, 350);
                     }
+
+                    if (player.id == commonData.playerTurnId) {
+                        g.setColor(Color.YELLOW);
+                    }
+
+                    i2++;
+                    drawText(g, "(" + i2 + ") " + player.playerName, 460, i2 * 20 + 200, 170, 20);
                 }
             }
         }
@@ -472,7 +482,7 @@ public class ClientUI extends MouseAdapter {
             return 1;
         }
 
-        String key = text + "_" + maxWidth;
+        String key = text + "_" + maxWidth + "_" + maxHeight;
         if (fontSizeCache.containsKey(key)) {
             return fontSizeCache.get(key);
         }
